@@ -21,3 +21,7 @@ https://raw.githubusercontent.com/plsn1337/white-vless/refs/heads/main/mykeys.tx
 https://raw.githubusercontent.com/Emir-name/vpn-sub/refs/heads/main/Premium%20Emir%20vpn
 
 https://raw.githubusercontent.com/SilentGhostCodes/WhiteListVpn/refs/heads/main/Whitelist.txt
+
+https://gist.githubusercontent.com/DestroyST6767/50af50221ca1858ba2084efc0f524fbc/raw
+
+https://gist.github.com/DestroyST6767/50af50221ca1858ba2084efc0f524fbc.txt
