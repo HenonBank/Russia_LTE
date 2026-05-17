@@ -1,7 +1,5 @@
 
-### ▶️ Connect
-
-Update → Select server → Connect
+### RUSSIA LTE by HENONBANK
 
 ---
 
