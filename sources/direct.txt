@@ -1,2 +1,3 @@
 https://gist.githubusercontent.com/DestroyST6767/50af50221ca1858ba2084efc0f524fbc/raw
 https://gist.github.com/DestroyST6767/50af50221ca1858ba2084efc0f524fbc.txt
+http://raw.githubusercontent.com/ebrasha/free-v2ray-public-list/refs/heads/main/V2Ray-Config-By-EbraSha-All-Type.txt
