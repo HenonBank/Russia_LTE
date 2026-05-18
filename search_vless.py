@@ -21,7 +21,7 @@ DIRECT_FILE = os.path.join(BASE_DIR, "sources", "direct.txt")
 TEST_FILE = os.path.join(BASE_DIR, "sources", "Test.txt")
 ROUTING_PROFILES_FILE = os.path.join(BASE_DIR, "routing_profiles", "profiles.json")
 
-MAX_KEYS = 2000
+MAX_KEYS = 400
 MAX_PER_HOST = 5
 
 UUID_RE = re.compile(r'^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$', re.I)
