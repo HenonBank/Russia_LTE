@@ -27,11 +27,11 @@ BLACKLIST_FILE  = os.path.join(BASE_DIR, "blacklist", "vless_blacklist.txt")
 CLASH_FILE      = os.path.join(BASE_DIR, "clash.yaml")
 ROUTING_PROFILES_FILE = os.path.join(BASE_DIR, "routing_profiles", "profiles.json")
 
-MAX_KEYS     = 600
-MAX_KEYS_2   = 600
+MAX_KEYS     = 1200
+MAX_KEYS_2   = 1200
 MAX_PER_HOST = 3
-TCP_TIMEOUT  = 6.0
-CONCURRENCY  = 80
+TCP_TIMEOUT  = 4.0
+CONCURRENCY  = 75
 
 _RU_NETWORKS_RAW = [
     "158.160.0.0/16", "130.193.32.0/19", "51.250.0.0/16", "84.201.128.0/17",
