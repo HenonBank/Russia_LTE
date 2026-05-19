@@ -336,7 +336,7 @@ def write_output(keys_with_lat):
     updated_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")
     announce = _make_announce(updated_at)
     header = "\n".join([
-        f"#profile-title: base64:{_b64e('Оставаться на связи')}",
+        f"#profile-title: base64:{_b64e('ОСТАТЬСЯ НА СВЯЗИ🛜')}",
         "#profile-update-interval: 2",
         "#support-url: https://github.com/HenonBank/Russia_LTE",
         "#profile-web-page-url: https://github.com/HenonBank/Russia_LTE",
@@ -356,7 +356,7 @@ def write_output_2(keys_with_lat):
     updated_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")
     announce = _make_announce(updated_at)
     header = "\n".join([
-        f"#profile-title: base64:{_b64e('Оставаться на связи')}",
+        f"#profile-title: base64:{_b64e('ОСТАТЬСЯ НА СВЯЗИ🛜')}",
         "#profile-update-interval: 2",
         "#support-url: https://github.com/HenonBank/Russia_LTE",
         "#profile-web-page-url: https://github.com/HenonBank/Russia_LTE",
@@ -454,7 +454,7 @@ def _build_clash_config(keys_with_lat, clash_file, title):
         "proxies": proxies,
         "proxy-groups": [
             {"name": "🚀 Авто", "type": "url-test", "proxies": names,
-             "url": "https://www.gstatic.com/generate_204", "interval": 180, "tolerance": 50},
+             "url": "https://www.youtube.com/", "interval": 180, "tolerance": 50},
             {"name": "🔀 Выбор", "type": "select", "proxies": ["🚀 Авто"] + names},
         ],
         "rules": ["GEOIP,RU,DIRECT", "MATCH,🔀 Выбор"],
