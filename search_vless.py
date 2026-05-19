@@ -336,7 +336,7 @@ def write_output(keys_with_lat):
     updated_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")
     announce = _make_announce(updated_at)
     header = "\n".join([
-        f"#profile-title: base64:{_b64e('HenonLTE')}",
+        f"#profile-title: base64:{_b64e('Оставаться на связи')}",
         "#profile-update-interval: 2",
         "#support-url: https://github.com/HenonBank/Russia_LTE",
         "#profile-web-page-url: https://github.com/HenonBank/Russia_LTE",
@@ -356,7 +356,7 @@ def write_output_2(keys_with_lat):
     updated_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")
     announce = _make_announce(updated_at)
     header = "\n".join([
-        f"#profile-title: base64:{_b64e('HenonLTE RU')}",
+        f"#profile-title: base64:{_b64e('Оставаться на связи')}",
         "#profile-update-interval: 2",
         "#support-url: https://github.com/HenonBank/Russia_LTE",
         "#profile-web-page-url: https://github.com/HenonBank/Russia_LTE",
@@ -466,7 +466,7 @@ def _build_clash_config(keys_with_lat, clash_file, title):
 
 
 def write_clash(keys_with_lat):
-    _build_clash_config(keys_with_lat, CLASH_FILE, "HenonLTE")
+    _build_clash_config(keys_with_lat, CLASH_FILE, "Оставаться на связи")
 
 
 def add_routing_profiles():
