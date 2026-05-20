@@ -1,5 +1,5 @@
 #announce: base64:0J7QodCi0JDQotCs0KHQryDQndCQINCh0JLQr9CX0JjtoL3tu5w=
-#profile-title: LTE  0J7QodCi0JDQotCs0KHQryDQndCQINCh0JLQr9CX0JjtoL3tu5w=
+#profile-title: LTE  ОСТАТЬСЯ НА СВЯЗИ🛜
 #profile-update-interval: None
 #subscription-userinfo: upload=0; download=122690843952; total=0; expire=0
 #support-url: 
