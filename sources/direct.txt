@@ -12,3 +12,7 @@ https://raw.githubusercontent.com/plsn1337/white-vless/refs/heads/main/mykeys.tx
 https://raw.githubusercontent.com/Emir-name/vpn-sub/refs/heads/main/Premium%20Emir%20vpn
 https://raw.githubusercontent.com/SilentGhostCodes/WhiteListVpn/refs/heads/main/Whitelist.txt
 https://is.wepogp.gay/bypass-hwid-lock-3z5O6BFAaJQzGlamvtSo?payload=teJa5U1EevPjDrwxP9eAeCrnWEIye7glwAvNefvD25XGvnya/6ujO/lo5os0eKXDHxbCwqvJN3qveJUCxvyKTEQ8BefROLkrRAMHv24Pcio%3D
+https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/WHITE-SNI-RU-all.txt
+https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/WHITE-CIDR-RU-checked.txt
+https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/WHITE-CIDR-RU-all.txt
+https://raw.githubusercontent.com/femboyenjoy/free-vless-VPN/refs/heads/main/vless.txt
