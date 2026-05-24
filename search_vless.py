@@ -8,8 +8,6 @@ import base64
 import os
 import time
 import logging
-import ipaddress
-import socket
 import json
 from datetime import datetime, timezone
 from html import unescape as html_unescape
@@ -18,103 +16,21 @@ from urllib.parse import urlparse, parse_qs, urlencode, urlunparse, quote
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s", datefmt="%H:%M:%S")
 log = logging.getLogger("whitevless")
 
-BASE_DIR        = os.path.dirname(os.path.abspath(__file__))
-OUTPUT_FILE     = os.path.join(BASE_DIR, "filtered_vless_keys.txt")
-OUTPUT_FILE_2   = os.path.join(BASE_DIR, "filtered_vless_keys_2.txt")
-DIRECT_FILE     = os.path.join(BASE_DIR, "sources", "direct.txt")
-TEST_FILE       = os.path.join(BASE_DIR, "sources", "Test.txt")
-BLACKLIST_FILE  = os.path.join(BASE_DIR, "blacklist", "vless_blacklist.txt")
-CLASH_FILE      = os.path.join(BASE_DIR, "clash.yaml")
-ROUTING_PROFILES_FILE = os.path.join(BASE_DIR, "routing_profiles", "profiles.json")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+OUTPUT_FILE = os.path.join(BASE_DIR, "filtered_vless_keys.txt")
+OUTPUT_FILE_2 = os.path.join(BASE_DIR, "filtered_vless_keys_2.txt")
+DIRECT_FILE = os.path.join(BASE_DIR, "sources", "direct.txt")
+TEST_FILE = os.path.join(BASE_DIR, "sources", "Test.txt")
+BLACKLIST_FILE = os.path.join(BASE_DIR, "blacklist", "vless_blacklist.txt")
 
-MAX_KEYS     = 1500
-MAX_KEYS_2   = 1500
-MAX_PER_HOST = 3
-TCP_TIMEOUT  = 6.0
-CONCURRENCY  = 80
+MAX_KEYS = 500
+MAX_KEYS_2 = 500
+MAX_PER_HOST = 2
 
-_RU_NETWORKS_RAW = [
-    # Твоя исходная таблица (RegRU, Beget, Yandex, Selectel, TimeWeb)
-    "31.31.196.0/24", "31.31.197.0/24", "31.31.198.0/24", "37.140.192.0/24", 
-    "37.140.193.0/24", "37.140.194.0/24", "37.140.195.0/24", "79.174.92.0/24", 
-    "79.174.93.0/24", "79.174.94.0/24", "79.174.95.0/24", "89.111.170.0/24", 
-    "95.163.232.0/24", "95.163.239.0/24", "194.67.98.0/24", "213.189.204.0/24",
-    "87.236.16.0/24", "51.250.48.0/24", "84.201.188.0/23", "84.201.184.0/22", 
-    "84.201.128.0/18", "158.160.0.0/16", "5.178.85.0/24", "5.188.112.0/21", 
-    "5.188.112.0/24", "5.188.113.0/24", "5.188.114.0/24", "5.188.115.0/24", 
-    "31.129.42.0/24", "31.131.251.0/24", "31.184.215.0/24", "37.9.4.0/24", 
-    "45.90.244.0/24", "46.148.227.0/24", "46.182.24.0/21", "46.182.24.0/24", 
-    "80.93.181.0/24", "80.93.187.0/24", "81.163.22.0/24", "81.163.23.0/24", 
-    "82.202.220.0/24", "82.202.252.0/24", "87.228.101.0/24", "87.242.108.0/24", 
-    "92.53.74.0/24", "94.26.224.0/24", "109.71.12.0/24", "109.71.13.0/24", 
-    "109.234.155.0/24", "146.185.192.0/24", "164.138.102.0/24", "185.91.52.0/22", 
-    "185.91.52.0/24", "185.91.53.0/24", "185.91.54.0/24", "185.91.55.0/24", 
-    "185.189.195.0/24", "188.68.218.0/24", "188.68.219.0/24", "188.68.221.0/24", 
-    "188.93.19.0/24", "212.41.170.0/24", "212.41.26.0/24", "81.200.148.0/24", 
-    "81.200.149.0/24", "81.200.150.0/24", "81.200.151.0/24",
-
-    # Добавленные пулы из логов твоего комьюнити
-    "185.14.0.0/16", "217.160.0.0/16", "178.250.0.0/16", "5.0.0.0/8", 
-    "51.0.0.0/8", "84.0.0.0/8", "190.120.0.0/16", "178.248.0.0/16", 
-    "5.188.0.0/16", "37.4.0.0/16", "67.0.0.0/8", "94.131.0.0/16", 
-    "64.188.0.0/16", "144.31.0.0/16", "185.242.19.0/24", "87.228.101.0/24", 
-    "84.201.160.0/24", "84.201.175.0/24", "84.201.140.0/24", "84.201.152.0/24", 
-    "84.201.141.0/24", "185.22.234.0/24", "109.120.189.0/24", "84.201.180.0/24", 
-    "195.133.198.0/24", "193.33.0.0/16", "84.201.172.0/24", "158.160.187.0/24", 
-    "84.201.129.0/24", "84.201.144.0/24", "158.160.32.0/24", "46.8.209.0/24", 
-    "158.160.51.0/24", "158.160.186.0/24", "84.201.168.0/24", "46.8.209.0/24", 
-    "84.201.138.0/24", "158.160.221.0/24", "51.250.0.0/16", "178.154.0.0/16", 
-    "84.201.0.0/16", "84.252.0.0/16", "85.192.0.0/16", "89.169.0.0/16", 
-    "141.193.0.0/16", "185.141.0.0/16", "31.58.0.0/16", "109.206.0.0/16", 
-    "45.12.0.0/14", "45.38.0.0/16", "89.110.0.0/16", "5.255.0.0/16", 
-    "193.164.0.0/16", "109.120.0.0/16", "77.110.0.0/16", "151.242.0.0/16", 
-    "185.79.0.0/16", "217.114.0.0/16", "31.56.0.0/16", "93.77.0.0/16", 
-    "91.206.0.0/16", "46.149.0.0/16", "185.211.0.0/16", "185.65.0.0/16", 
-    "91.108.0.0/16", "138.124.0.0/16", "212.192.0.0/16", "152.53.0.0/16", 
-    "150.241.0.0/16", "193.53.0.0/16", "47.80.0.0/16", "46.8.0.0/16", 
-    "46.182.0.0/16", "46.243.0.0/16", "46.254.0.0/16", "62.152.0.0/16", 
-    "78.159.0.0/16", "79.174.0.0/16", "81.94.0.0/16", "81.163.0.0/16", 
-    "81.200.0.0/16", "87.228.0.0/16", "89.208.0.0/16", "91.218.0.0/16", 
-    "109.120.0.0/16", "151.236.0.0/16", "176.108.0.0/16", "185.22.0.0/16", 
-    "185.86.0.0/16", "188.68.0.0/16", "194.55.0.0/16", "212.233.0.0/16", 
-    "213.219.0.0/16", "217.16.0.0/16", "87.251.0.0/16", "185.139.0.0/16", 
-    "91.107.0.0/16", "146.190.0.0/16"
-]
-RU_NETWORKS = [ipaddress.ip_network(n, strict=False) for n in _RU_NETWORKS_RAW]
-
-SELECTEL_RANGES = [
-    ipaddress.ip_network("36.46.0.0/16", strict=False),
-    ipaddress.ip_network("45.153.0.0/16", strict=False),
-]
-
-UUID_RE   = re.compile(r'^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$', re.I)
-ARABIC_RE = re.compile(r'[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]')
-SPAM_RE   = re.compile(r'(t\.me|telegram\.(me|org|dog)|@[\w_]{3,}|купить|прода)', re.I)
-
-BLOCKLIST_EXACT:   set[str] = set()
+BLOCKLIST_EXACT: set[str] = set()
 BLOCKLIST_PARTIAL: set[str] = set()
 
-
-def _ip_in_ru_networks(host: str) -> bool:
-    try:
-        addr = ipaddress.ip_address(host)
-    except ValueError:
-        try:
-            addr = ipaddress.ip_address(socket.gethostbyname(host))
-        except Exception:
-            return False
-    return any(addr in net for net in RU_NETWORKS)
-
-
-def _is_selectel(host: str) -> bool:
-    try:
-        addr = ipaddress.ip_address(host)
-    except ValueError:
-        try:
-            addr = ipaddress.ip_address(socket.gethostbyname(host))
-        except Exception:
-            return False
-    return any(addr in net for net in SELECTEL_RANGES)
+UUID_RE = re.compile(r'^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$', re.I)
 
 
 def _lines(path):
@@ -136,16 +52,6 @@ def load_blocklist():
     log.info(f"blocklist: exact={len(BLOCKLIST_EXACT)}, partial={len(BLOCKLIST_PARTIAL)}")
 
 
-def _extract(link, part):
-    try:
-        p = urlparse(link)
-        if part == "host": return p.hostname or ""
-        if part == "port": return p.port if p.port and 1 <= p.port <= 65535 else 0
-        if part == "params": return {k: v[0] for k, v in parse_qs(p.query).items()}
-    except: pass
-    return "" if part != "port" else 0
-
-
 def _valid_uuid(u):
     return bool(UUID_RE.match(u)) if u else False
 
@@ -160,22 +66,29 @@ def _clean(raw):
     key = raw.strip()
     if not key.startswith("vless://"): return None
     if len(key) > 1000: return None
-    base = ARABIC_RE.sub("", key.split("#")[0])
-    if SPAM_RE.search(base): return None
     if _is_blocked(key): return None
+    
     try:
-        p = urlparse(base)
+        p = urlparse(key)
         if not _valid_uuid(p.username or ""): return None
         if not p.hostname or not p.port: return None
         if not (1 <= p.port <= 65535): return None
-    except: return None
-    params = {k: v[0] for k, v in parse_qs(urlparse(base).query).items()}
+        
+        if not re.match(r'^[a-zA-Z0-9\.\-]+$', p.hostname):
+            return None
+    except:
+        return None
+    
+    params = {k: v[0] for k, v in parse_qs(urlparse(key).query).items()}
     if params.get("encryption", "none") != "none": return None
     if "pqv" in params: return None
+    
     if params.get("security") == "reality" and "fp" not in params:
         params["fp"] = "chrome"
-        base = urlunparse(urlparse(base)._replace(query=urlencode(params)))
-    return base
+        base = urlunparse(urlparse(key)._replace(query=urlencode(params)))
+        return base
+    
+    return key
 
 
 def _parse_text(text):
@@ -187,21 +100,24 @@ def _parse_text(text):
             decoded = base64.b64decode(stripped + "==").decode("utf-8", errors="ignore")
             if "vless://" in decoded:
                 text = decoded
-        except: pass
+        except:
+            pass
+    
     keys = []
     for line in text.splitlines():
         line = line.strip()
         candidates = [line] if line.startswith("vless://") else re.findall(r'vless://[^\s\'"<>\]\[]+', line)
         for c in candidates:
             k = _clean(c)
-            if k: keys.append(k)
+            if k:
+                keys.append(k)
     return keys
 
 
 async def _get(session, url):
     try:
         async with session.get(url, headers={"Accept": "text/plain, */*"},
-                               timeout=aiohttp.ClientTimeout(total=25)) as r:
+                               timeout=aiohttp.ClientTimeout(total=20)) as r:
             if r.status == 200:
                 return await r.text(errors="ignore")
             log.debug(f"fetch {url}: status {r.status}")
@@ -236,386 +152,124 @@ async def fetch_test(session):
     return keys
 
 
-async def tcp_check(host, port) -> float:
+def _extract_host(key):
     try:
-        start = time.monotonic()
-        _, writer = await asyncio.wait_for(asyncio.open_connection(host, port), timeout=TCP_TIMEOUT)
-        writer.close()
-        try: await writer.wait_closed()
-        except: pass
-        return (time.monotonic() - start) * 1000
-    except: return -1.0
+        p = urlparse(key)
+        return p.hostname or ""
+    except:
+        return ""
 
 
-async def tls_check(host, port, sni) -> float:
-    import ssl
-    ctx = ssl.create_default_context()
-    ctx.check_hostname = False
-    ctx.verify_mode = ssl.CERT_NONE
+def _extract_port(key):
     try:
-        start = time.monotonic()
-        _, writer = await asyncio.wait_for(
-            asyncio.open_connection(host, port, ssl=ctx, server_hostname=sni), timeout=TCP_TIMEOUT)
-        writer.close()
-        try: await writer.wait_closed()
-        except: pass
-        return (time.monotonic() - start) * 1000
-    except: return -1.0
-
-
-async def probe_key(key) -> float:
-    host   = _extract(key, "host")
-    port   = _extract(key, "port")
-    params = _extract(key, "params")
-    if not host or not port: return -1.0
-
-    sec = params.get("security", "")
-    sni = params.get("sni", "")
-
-    if sec in ("reality", "tls") and sni:
-        lat = await tls_check(host, port, sni)
-        if lat > 0: return lat
-        return await tcp_check(host, port)
-
-    try:
-        start = time.monotonic()
-        reader, writer = await asyncio.wait_for(asyncio.open_connection(host, port), timeout=TCP_TIMEOUT)
-        writer.write(b"\x00")
-        await writer.drain()
-        try:
-            await asyncio.wait_for(reader.read(1), timeout=1.0)
-        except asyncio.TimeoutError:
-            pass
-        writer.close()
-        try: await writer.wait_closed()
-        except: pass
-        return (time.monotonic() - start) * 1000
-    except: return -1.0
-
-
-async def check_batch(keys, sem):
-    async def _one(key):
-        async with sem:
-            lat = await probe_key(key)
-        if lat < 0: return None
-        return (lat, key)
-    results = await asyncio.gather(*[_one(k) for k in keys])
-    return sorted([r for r in results if r], key=lambda x: x[0])
-
-
-GEO_CACHE: dict[str, dict] = {}
-
-
-def _cc_flag(cc):
-    if len(cc) != 2: return "🌐"
-    return chr(ord(cc[0]) + 127397) + chr(ord(cc[1]) + 127397)
-
-
-async def geo_lookup(session, hosts):
-    unique = list(dict.fromkeys(hosts))
-    for i in range(0, len(unique), 100):
-        chunk = unique[i:i+100]
-        try:
-            payload = [{"query": h, "fields": "query,countryCode,isp,org"} for h in chunk]
-            async with session.post("http://ip-api.com/batch", json=payload,
-                                    timeout=aiohttp.ClientTimeout(total=15)) as r:
-                if r.status == 200:
-                    for item in await r.json(content_type=None):
-                        h   = item.get("query", "")
-                        cc  = item.get("countryCode", "")
-                        isp = item.get("isp", "") or item.get("org", "")
-                        isp = re.sub(r'\s*\(.*?\)', '', isp).strip()[:45]
-                        GEO_CACHE[h] = {"cc": cc, "isp": isp, "flag": _cc_flag(cc)}
-        except Exception as e: log.debug(f"geo batch: {e}")
-        await asyncio.sleep(1.0)
-
-
-_COUNTER = {"n": 0}
-
-
-def _build_remark(key, lat):
-    host   = _extract(key, "host")
-    geo    = GEO_CACHE.get(host, {})
-    flag   = geo.get("flag", "🌐")
-    isp    = geo.get("isp", "")
-    params = _extract(key, "params")
-    sec    = params.get("security", "")
-    tp     = params.get("type", "tcp")
-
-    if sec == "reality":
-        prefix = "LTE"
-    elif tp in ("ws", "websocket", "grpc", "xhttp"):
-        prefix = "Универсальный"
-    else:
-        prefix = "Сервер"
-
-    _COUNTER["n"] += 1
-    isp_short = isp.split()[0][:14] if isp else host[:14]
-    
-    if _is_selectel(host):
-        suffix = " | Не для ТГ, ТТ"
-    else:
-        suffix = ""
-    
-    return f"{flag} {prefix} | {isp_short}{suffix} | #{_COUNTER['n']}"
+        p = urlparse(key)
+        return p.port if p.port and 1 <= p.port <= 65535 else 0
+    except:
+        return 0
 
 
 def _b64e(s): return base64.b64encode(s.encode()).decode()
 
 
-def _make_announce(updated_at: str) -> str:
-    return (
-        f"🕐 Обновлено: {updated_at} UTC\n\n"
-        "📖 Инструкция подключения:\n"
-        "1️⃣  Обновить подписку (🔄) | 2️⃣  Пинг серверов (🕒)\n"
-        "3️⃣  Выбрать быстрый (меньше ms) | 4️⃣  Подключиться (✅)\n\n"
-    )
-
-
-def write_output(keys_with_lat):
-    updated_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")
-    announce = _make_announce(updated_at)
-    header = "\n".join([
-        f"#profile-title: base64:{_b64e('ОСТАТЬСЯ НА СВЯЗИ🛜')}",
-        "#profile-update-interval: 2",
-        "#support-url: https://github.com/HenonBank/Russia_LTE",
-        "#profile-web-page-url: https://github.com/HenonBank/Russia_LTE",
-        f"#announce: base64:{_b64e(announce)}", "",
-    ])
-    _COUNTER["n"] = 0
-    lines = []
-    for lat, key in keys_with_lat:
-        lines.append(f"{key}#{quote(_build_remark(key, lat))}")
-    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-        f.write(header)
-        for l in lines: f.write(l + "\n")
-    log.info(f"written {len(lines)} keys → {OUTPUT_FILE}")
-
-
-def write_output_2(keys_with_lat):
-    updated_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")
-    announce = _make_announce(updated_at)
-    header = "\n".join([
-        f"#profile-title: base64:{_b64e('ОСТАТЬСЯ НА СВЯЗИ🛜')}",
-        "#profile-update-interval: 2",
-        "#support-url: https://github.com/HenonBank/Russia_LTE",
-        "#profile-web-page-url: https://github.com/HenonBank/Russia_LTE",
-        f"#announce: base64:{_b64e(announce)}", "",
-    ])
-    _COUNTER["n"] = 0
-    lines = []
-    for lat, key in keys_with_lat:
-        lines.append(f"{key}#{quote(_build_remark(key, lat))}")
-    with open(OUTPUT_FILE_2, "w", encoding="utf-8") as f:
-        f.write(header)
-        for l in lines: f.write(l + "\n")
-    log.info(f"[sub2] written {len(lines)} keys → {OUTPUT_FILE_2}")
-
-
-def _build_clash_config(keys_with_lat, clash_file, title):
-    def _proxy(key, name):
-        try:
-            p = urlparse(key)
-            params = {k: v[0] for k, v in parse_qs(p.query).items()}
-            sec = params.get("security", "")
-            tp  = params.get("type", "tcp")
-            proxy = {"name": name, "type": "vless", "server": p.hostname,
-                     "port": p.port, "uuid": p.username, "udp": True}
-            flow = params.get("flow", "")
-            if flow: proxy["flow"] = flow
-            if sec == "reality":
-                proxy.update({"tls": True, "servername": params.get("sni", ""),
-                    "reality-opts": {"public-key": params.get("pbk", ""), "short-id": params.get("sid", "")},
-                    "client-fingerprint": params.get("fp", "chrome")})
-            elif sec == "tls":
-                proxy.update({"tls": True, "servername": params.get("sni", ""), "skip-cert-verify": True})
-            if tp == "ws":
-                proxy["network"] = "ws"
-                proxy["ws-opts"] = {"path": params.get("path", "/"), "headers": {"Host": params.get("host", p.hostname)}}
-            elif tp == "grpc":
-                proxy["network"] = "grpc"
-                proxy["grpc-opts"] = {"grpc-service-name": params.get("serviceName", "")}
-            elif tp in ("xhttp", "http"):
-                proxy["network"] = "http"
-                proxy["http-opts"] = {"path": [params.get("path", "/")]}
-            return proxy
-        except: return None
-
-    def _yv(v):
-        if isinstance(v, bool): return "true" if v else "false"
-        if isinstance(v, (int, float)): return str(v)
-        s = str(v)
-        if any(c in s for c in ':{}[]|>&*!,#?@`\'"') or not s: return f'"{s}"'
-        return s
-
-    def _yaml(obj, indent=0):
-        pad = "  " * indent
-        if isinstance(obj, dict):
-            out = []
-            for k, v in obj.items():
-                if isinstance(v, (dict, list)):
-                    out.append(f"{pad}{k}:"); out.append(_yaml(v, indent+1))
-                else:
-                    out.append(f"{pad}{k}: {_yv(v)}")
-            return "\n".join(out)
-        elif isinstance(obj, list):
-            out = []
-            for item in obj:
-                if isinstance(item, dict):
-                    items = list(item.items()); fk, fv = items[0]
-                    if isinstance(fv, (dict, list)):
-                        out.append(f"{pad}- {fk}:"); out.append(_yaml(fv, indent+2))
-                    else:
-                        out.append(f"{pad}- {fk}: {_yv(fv)}")
-                    for k, v in items[1:]:
-                        if isinstance(v, (dict, list)):
-                            out.append(f"{pad}  {k}:"); out.append(_yaml(v, indent+2))
-                        else:
-                            out.append(f"{pad}  {k}: {_yv(v)}")
-                else:
-                    out.append(f"{pad}- {_yv(item)}")
-            return "\n".join(out)
-        return f"{pad}{_yv(obj)}"
-
-    proxies, names = [], []
-    _COUNTER["n"] = 0
-    for lat, key in keys_with_lat:
-        name = _build_remark(key, lat)
-        base = name; i = 1
-        while name in names: name = f"{base} ({i})"; i += 1
-        px = _proxy(key, name)
-        if px: proxies.append(px); names.append(name)
-
-    if not proxies: return
-
-    cfg = {
-        "mixed-port": 7890, "allow-lan": False, "mode": "rule",
-        "log-level": "warning", "external-controller": "127.0.0.1:9090",
-        "proxies": proxies,
-        "proxy-groups": [
-            {"name": "🚀 Авто", "type": "url-test", "proxies": names,
-             "url": "https://www.youtube.com/", "interval": 180, "tolerance": 50},
-            {"name": "🔀 Выбор", "type": "select", "proxies": ["🚀 Авто"] + names},
-        ],
-        "rules": ["GEOIP,RU,DIRECT", "MATCH,🔀 Выбор"],
-    }
-    with open(clash_file, "w", encoding="utf-8") as f:
-        f.write(f"# {title} — Clash Meta config\n")
-        f.write(_yaml(cfg) + "\n")
-    log.info(f"written clash: {len(proxies)} proxies → {clash_file}")
-
-
-def write_clash(keys_with_lat):
-    _build_clash_config(keys_with_lat, CLASH_FILE, "Оставаться на связи")
-
-
-def add_routing_profiles():
-    if not os.path.exists(ROUTING_PROFILES_FILE):
-        log.warning(f"routing profiles file not found: {ROUTING_PROFILES_FILE}")
-        return
-    
-    try:
-        with open(ROUTING_PROFILES_FILE, "r", encoding="utf-8") as f:
-            profiles = json.load(f)
-        
-        routing_profiles = [p for p in profiles if p.get("type") == "routing"]
-        control_profiles = [p for p in profiles if p.get("type") == "control"]
-        
-        log.info(f"routing profiles: {len(routing_profiles)} routing, {len(control_profiles)} control")
-        
-        for profile in routing_profiles:
-            name = profile.get("name", "Unknown")
-            description = profile.get("description", "")
-            auto_apply = " (auto)" if profile.get("auto_apply") else ""
-            log.info(f"  🔀 {name}{auto_apply}: {description}")
-        
-        for profile in control_profiles:
-            name = profile.get("name", "Unknown")
-            description = profile.get("description", "")
-            log.info(f"  ⚙️  {name}: {description}")
-    except Exception as e:
-        log.error(f"error loading routing profiles: {e}")
-
-
 def _dedup(keys):
     seen_ep, host_count, result = set(), {}, []
     for key in keys:
-        host = _extract(key, "host")
-        ep   = f"{host}:{_extract(key, 'port')}"
-        if ep in seen_ep: continue
-        if host_count.get(host, 0) >= MAX_PER_HOST: continue
+        host = _extract_host(key)
+        port = _extract_port(key)
+        ep = f"{host}:{port}"
+        if ep in seen_ep:
+            continue
+        if host_count.get(host, 0) >= MAX_PER_HOST:
+            continue
         seen_ep.add(ep)
         host_count[host] = host_count.get(host, 0) + 1
         result.append(key)
     return result
 
 
+def write_output(keys):
+    updated_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")
+    
+    header = "\n".join([
+        f"#profile-title: base64:{_b64e('VLESS COLLECTION')}",
+        "#profile-update-interval: 12",
+        "#profile-web-page-url: https://github.com/HenonBank/Russia_LTE",
+        f"#updated: {updated_at} UTC", "",
+    ])
+    
+    lines = []
+    for i, key in enumerate(keys, 1):
+        lines.append(f"{key}#[{i}]")
+    
+    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+        f.write(header)
+        for l in lines:
+            f.write(l + "\n")
+    
+    log.info(f"written {len(lines)} keys -> {OUTPUT_FILE}")
+
+
+def write_output_2(keys):
+    updated_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")
+    
+    header = "\n".join([
+        f"#profile-title: base64:{_b64e('VLESS COLLECTION ALT')}",
+        "#profile-update-interval: 12",
+        "#profile-web-page-url: https://github.com/HenonBank/Russia_LTE",
+        f"#updated: {updated_at} UTC", "",
+    ])
+    
+    lines = []
+    for i, key in enumerate(keys, 1):
+        host = _extract_host(key)
+        lines.append(f"{key}#[{host[:30]} #{i}]")
+    
+    with open(OUTPUT_FILE_2, "w", encoding="utf-8") as f:
+        f.write(header)
+        for l in lines:
+            f.write(l + "\n")
+    
+    log.info(f"[sub2] written {len(lines)} keys -> {OUTPUT_FILE_2}")
+
+
 async def main():
+    start_time = time.time()
+    log.info("=" * 60)
+    log.info("STARTING VLESS COLLECTOR (NO CHECKING)")
+    log.info("=" * 60)
+    
     load_blocklist()
-    add_routing_profiles()
-
-    connector = aiohttp.TCPConnector(limit=150, ssl=False)
-    ua = {"User-Agent": "Mozilla/5.0 (compatible; WhiteVless/5.0)"}
-
+    
+    connector = aiohttp.TCPConnector(limit=100, ssl=False)
+    ua = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:120.0) Gecko/20100101 Firefox/120.0"}
+    
     async with aiohttp.ClientSession(connector=connector, headers=ua) as session:
-
+        log.info("\n[PHASE 1] Collecting configs from direct sources")
         all_keys = await fetch_direct(session)
-        log.info(f"collected: {len(all_keys)}")
-
+        log.info(f"Collected: {len(all_keys)}")
+        
         deduped = _dedup(all_keys)
-        log.info(f"after dedup: {len(deduped)}")
-
-        sem = asyncio.Semaphore(CONCURRENCY)
-        alive = await check_batch(deduped, sem)
-        log.info(f"alive: {len(alive)}")
-
-        selected = alive[:MAX_KEYS]
-        await geo_lookup(session, list(dict.fromkeys(_extract(k, "host") for _, k in selected)))
-
+        log.info(f"After dedup (max {MAX_PER_HOST} per host): {len(deduped)}")
+        
+        selected = deduped[:MAX_KEYS]
+        log.info(f"Selected for output: {len(selected)}")
+        
         write_output(selected)
-        write_clash(selected)
-        log.info(f"sub1 done: {len(selected)} keys")
-
-        log.info("=" * 60)
+        
+        log.info("\n[PHASE 2] Processing Test.txt")
         all_keys_2 = await fetch_test(session)
-        log.info(f"[sub2] collected: {len(all_keys_2)}")
-
-        if not all_keys_2:
-            log.info("[sub2] no sources in Test.txt, skipping")
-            return
-
-        unique_hosts = list(dict.fromkeys(_extract(k, "host") for k in all_keys_2 if _extract(k, "host")))
-        log.info(f"[sub2] resolving {len(unique_hosts)} unique hosts...")
-        loop = asyncio.get_event_loop()
-        sem_dns = asyncio.Semaphore(200)
-
-        async def _check_host(host):
-            async with sem_dns:
-                return host, await loop.run_in_executor(None, _ip_in_ru_networks, host)
-
-        results = await asyncio.gather(*[_check_host(h) for h in unique_hosts])
-        ru_hosts = {h for h, ok in results if ok}
-        log.info(f"[sub2] hosts in RU ranges: {len(ru_hosts)}")
-
-        ru_filtered = [k for k in all_keys_2 if _extract(k, "host") in ru_hosts]
-        log.info(f"[sub2] after RU IP filter: {len(ru_filtered)}")
-
-        deduped2 = _dedup(ru_filtered)
-        log.info(f"[sub2] after dedup: {len(deduped2)}")
-
-        def _port_priority(key):
-            port = _extract(key, "port")
-            return 0 if port == 443 else port
-
-        selected2 = sorted(deduped2, key=_port_priority)[:MAX_KEYS_2]
-        log.info(f"[sub2] selected (no TCP check): {len(selected2)}")
-
-        await geo_lookup(session, list(dict.fromkeys(_extract(k, "host") for k in selected2)))
-
-        selected2_with_lat = [(0, k) for k in selected2]
-        write_output_2(selected2_with_lat)
-
-        log.info(f"[sub2] done: {len(selected2)} keys")
+        log.info(f"Collected: {len(all_keys_2)}")
+        
+        if all_keys_2:
+            deduped2 = _dedup(all_keys_2)
+            selected2 = deduped2[:MAX_KEYS_2]
+            write_output_2(selected2)
+            log.info(f"Saved: {len(selected2)} configs")
+    
+    elapsed = time.time() - start_time
+    log.info("\n" + "=" * 60)
+    log.info(f"COLLECTION COMPLETED in {elapsed:.1f} seconds")
+    log.info("=" * 60)
 
 
 if __name__ == "__main__":
