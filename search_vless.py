@@ -23,8 +23,8 @@ DIRECT_FILE = os.path.join(BASE_DIR, "sources", "direct.txt")
 TEST_FILE = os.path.join(BASE_DIR, "sources", "Test.txt")
 BLACKLIST_FILE = os.path.join(BASE_DIR, "blacklist", "vless_blacklist.txt")
 
-MAX_KEYS = 500
-MAX_KEYS_2 = 500
+MAX_KEYS = 1000
+MAX_KEYS_2 = 1000
 MAX_PER_HOST = 2
 
 BLOCKLIST_EXACT: set[str] = set()
