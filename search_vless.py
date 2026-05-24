@@ -191,7 +191,7 @@ def write_output(keys):
     updated_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")
     
     header = "\n".join([
-        f"#profile-title: base64:{_b64e('VLESS COLLECTION')}",
+        f"#profile-title: base64:{_b64e('ОСТАТЬСЯ НА СВЯЗИ🛜')}",
         "#profile-update-interval: 12",
         "#profile-web-page-url: https://github.com/HenonBank/Russia_LTE",
         f"#updated: {updated_at} UTC", "",
@@ -213,7 +213,7 @@ def write_output_2(keys):
     updated_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")
     
     header = "\n".join([
-        f"#profile-title: base64:{_b64e('VLESS COLLECTION ALT')}",
+        f"#profile-title: base64:{_b64e('ОСТАТЬСЯ НА СВЯЗИ🛜 2')}",
         "#profile-update-interval: 12",
         "#profile-web-page-url: https://github.com/HenonBank/Russia_LTE",
         f"#updated: {updated_at} UTC", "",
