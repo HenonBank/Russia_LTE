@@ -198,8 +198,10 @@ def write_output(keys):
     ])
     
     lines = []
-    for i, key in enumerate(keys, 1):
-        lines.append(f"{key}#[{i}]")
+    for key in keys:
+        # Убираем старые названия (#[номер] и т.д.), заменяем на #LTE
+        base_key = key.split('#')[0]
+        lines.append(f"{base_key}#LTE")
     
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         f.write(header)
@@ -220,9 +222,10 @@ def write_output_2(keys):
     ])
     
     lines = []
-    for i, key in enumerate(keys, 1):
-        host = _extract_host(key)
-        lines.append(f"{key}#[{host[:30]} #{i}]")
+    for key in keys:
+        # Убираем старые названия, заменяем на LTE
+        base_key = key.split('#')[0]
+        lines.append(f"{base_key}#LTE")
     
     with open(OUTPUT_FILE_2, "w", encoding="utf-8") as f:
         f.write(header)
