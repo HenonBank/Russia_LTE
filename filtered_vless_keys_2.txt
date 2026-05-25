@@ -1,7 +1,7 @@
 #profile-title: base64:0J7QodCi0JDQotCs0KHQryDQndCQINCh0JLQr9CX0Jjwn5ucIDI=
 #profile-update-interval: 12
 #profile-web-page-url: https://github.com/HenonBank/Russia_LTE
-#updated: 2026-05-25 21:14 UTC
+#updated: 2026-05-25 23:10 UTC
 vless://106c376f-431d-4ea0-bc61-f82308fefb4e@94.125.103.217:443?flow=xtls-rprx-vision&fp=chrome&pbk=8h8t5eBWL9oERK7xWHQLFJE5j6sZdgNDQAs3EGnNbho&security=reality&sid=b76dcf9e1183fe1b&sni=ads.x5.ru&type=tcp#LTE
 vless://106c376f-431d-4ea0-bc61-f82308fefb4e@31.130.150.34:443?flow=xtls-rprx-vision&fp=chrome&pbk=8h8t5eBWL9oERK7xWHQLFJE5j6sZdgNDQAs3EGnNbho&security=reality&sid=b76dcf9e1183fe1b&sni=ads.x5.ru&type=tcp#LTE
 vless://cbcf7fa0-2539-4a7d-b53d-2da26ab65385@fin.ethervds.com:47030?security=reality&sni=api-maps.yandex.ru&fp=qq&pbk=cZsRvk8pr8wfYiX1CNxdDjR38tow3HuL6IpBj8P82l8&sid=e18eda8458cab0d7&type=tcp&flow=xtls-rprx-vision#LTE
