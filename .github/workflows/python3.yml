@@ -1,39 +1,49 @@
-name: Update VPN Configs
+name: Hourly Xray Config Checker & Repo Updater
 
 on:
+  schedule:
+    - cron: '0 * * * *'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
+concurrency:
+  group: xray-config-checker
+  cancel-in-progress: true
+
 jobs:
-  update:
+  run-checker:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
 
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+    - name: Install dependencies
+      run: |
+        python3 -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Install dependencies
-        run: pip install requests
+    - name: Run checker script
+      run: python3 checker.py
 
-      - name: Run updater
-        run: python update_configs.py
+    - name: Commit and Push changes
+      run: |
+        if [ ! -f "v2ray_sub.txt" ]; then
+          echo "Файл v2ray_sub.txt не найден!"
+          exit 1
+        fi
 
-      - name: Commit & push to GitHub
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add wl_228.txt bl_228.txt pc_228.txt
-          if git diff --staged --quiet; then
-            echo "Нет изменений."
-          else
-            git commit -m "⚡ update configs $(date -u '+%H:%M %d.%m.%Y UTC')"
-            git pull --rebase origin main
-            git push origin main
-          fi
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+
+        git add v2ray_sub.txt
+
+        if git diff --cached --quiet; then
+          echo "Нет изменений для коммита"
+          exit 0
+        fi
+
+        git commit -m "Auto-update subscription links [skip ci]"
+        git push origin HEAD:main
