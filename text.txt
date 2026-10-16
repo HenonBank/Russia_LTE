@@ -3,5 +3,8 @@
 
 happ://routing/onadd/eyJOYW1lIjoiQ3VzdG9tUm91dGVzIiwiR2xvYmFsUHJveHkiOiJmYWxzZSIsIkRpcmVjdFNpdGVzIjpbImJhbmsubXUiLCJnb3N1c2x1Z2kucnUiXSwiUHJveHlTaXRlcyI6WyJ5b3V0dWJlLmNvbSJdfQ==
 
-vless://70cc48c5...#Сервер 1
-vmess://zkIAU1Ji...#Сервер 2
+vless://495c7195-85b8-498a-bf20-2ea9ce9175b5@saas.sin.fan:443?encryption=none&security=tls&type=ws&host=snip.edgeoneai.cc.cd&path=%2F&sni=snip.edgeoneai.cc.cd#%F0%9F%87%BA%F0%9F%87%B8%20%D0%91%D0%A1%20%F0%9F%93%8B%E2%9C%93%20%E2%84%961%20131.2MB%2Fs%20411ms
+vless://495c7195-85b8-498a-bf20-2ea9ce9175b5@188.114.98.0:443?security=tls&type=ws&path=/?TELEGRAM-TOOTFFARANGI&host=snip.edgeoneai.cc.cd&packetEncoding=xudp&alpn=http/1.1&sni=snip.edgeoneai.cc.cd&fp=chrome&encryption=none#%F0%9F%87%BA%F0%9F%87%B8%20%D0%91%D0%A1%20%F0%9F%93%8B%E2%9C%93%20%E2%84%962%20123.2MB%2Fs%20480ms
+vless://495c7195-85b8-498a-bf20-2ea9ce9175b5@188.114.97.6:443?encryption=none&security=tls&type=ws&host=snip.edgeoneai.cc.cd&path=%2Ffdip&sni=snip.edgeoneai.cc.cd&alpn=http%2F1.1&fp=chrome#%F0%9F%87%BA%F0%9F%87%B8%20%D0%91%D0%A1%20%F0%9F%93%8B%E2%9C%93%20%E2%84%963%2055.3MB%2Fs%20301ms
+vless://495c7195-85b8-498a-bf20-2ea9ce9175b5@104.17.148.22:443?&security=tls&fp=chrome&sni=snip.edgeoneai.cc.cd&type=ws&headerType=none&host=snip.edgeoneai.cc.cd&path=%2F#%F0%9F%87%BA%F0%9F%87%B8%20%D0%91%D0%A1%20%F0%9F%93%8B%E2%9C%93%20%E2%84%964%2054.8MB%2Fs%20183ms
+vless://495c7195-85b8-498a-bf20-2ea9ce9175b5@saas.sin.fan:443?encryption=none&security=tls&type=ws&host=s
