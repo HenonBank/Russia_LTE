@@ -1,5 +1,4 @@
 #profile-title: ОСТАТЬСЯ НА СВЯЗИ🛜
-#profile-update-interval: 1
 #routing-enable: 1
 #announce: TESTING MODE
 happ://routing/onadd/eyJOYW1lIjoiQ3VzdG9tUm91dGVzIiwiR2xvYmFsUHJveHkiOiJmYWxzZSIsIkRpcmVjdFNpdGVzIjpbImJhbmsubXUiLCJnb3N1c2x1Z2kucnUiXSwiUHJveHlTaXRlcyI6WyJ5b3V0dWJlLmNvbSJdfQ==
