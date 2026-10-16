@@ -1,6 +1,7 @@
-#profile-title: Мой VPN с правилами
+#profile-title: ОСТАТЬСЯ НА СВЯЗИ🛜
+#profile-update-interval: 1
 #routing-enable: 1
-
+#announce: TESTING MODE
 happ://routing/onadd/eyJOYW1lIjoiQ3VzdG9tUm91dGVzIiwiR2xvYmFsUHJveHkiOiJmYWxzZSIsIkRpcmVjdFNpdGVzIjpbImJhbmsubXUiLCJnb3N1c2x1Z2kucnUiXSwiUHJveHlTaXRlcyI6WyJ5b3V0dWJlLmNvbSJdfQ==
 
 vless://495c7195-85b8-498a-bf20-2ea9ce9175b5@saas.sin.fan:443?encryption=none&security=tls&type=ws&host=snip.edgeoneai.cc.cd&path=%2F&sni=snip.edgeoneai.cc.cd#%F0%9F%87%BA%F0%9F%87%B8%20%D0%91%D0%A1%20%F0%9F%93%8B%E2%9C%93%20%E2%84%961%20131.2MB%2Fs%20411ms
