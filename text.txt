@@ -1,0 +1,7 @@
+#profile-title: Мой VPN с правилами
+#routing-enable: 1
+
+happ://routing/onadd/eyJOYW1lIjoiQ3VzdG9tUm91dGVzIiwiR2xvYmFsUHJveHkiOiJmYWxzZSIsIkRpcmVjdFNpdGVzIjpbImJhbmsubXUiLCJnb3N1c2x1Z2kucnUiXSwiUHJveHlTaXRlcyI6WyJ5b3V0dWJlLmNvbSJdfQ==
+
+vless://70cc48c5...#Сервер 1
+vmess://zkIAU1Ji...#Сервер 2
