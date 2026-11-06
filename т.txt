@@ -1,0 +1,20 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+struct phone {
+    string model;
+    int ram;
+    int storage;
+};
+
+int main() {
+    phone my_phone;
+    my_phone.model = "Xiaomi Redmi Note 13";
+    my_phone.ram = 8;
+    my_phone.storage = 256;
+    phone phone2 {"Apple iPhone 15", 6, 128};
+    cout << "1. Модель: " << my_phone.model << ", RAM: " << my_phone.ram << " ГБ, Память: " << my_phone.storage << " ГБ" << endl;
+    cout << "2. Модель: " << phone2.model << ", RAM: " << phone2.ram << " ГБ, Память: " << phone2.storage << " ГБ" << endl;
+    return 0;
+}
