@@ -1,0 +1,26 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+struct Address {
+    string city;
+    string street;
+};
+
+struct Employee {
+    string name;
+    Address home;
+};
+
+int main() {
+    Employee emp;
+    
+    emp.name = "Иван";
+    emp.home.city = "Москва";
+    emp.home.street = "Ленина";
+
+    cout << emp.name << " живет в " << emp.home.city 
+         << " на улице " << emp.home.street << endl;
+         
+    return 0;
+}
