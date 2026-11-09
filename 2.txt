@@ -1,0 +1,32 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+struct Player {
+    string name;
+    int score;
+};
+
+Player getWinner(Player arr[], int size) {
+    Player best = arr[0];
+    
+    for (int i = 1; i < size; i++) {
+        if (arr[i].score > best.score) {
+            best = arr[i];
+        }
+    }
+    return best;
+}
+
+int main() {
+    Player game[3] = {
+        {"Алекс", 150},
+        {"Мария", 300},
+        {"Петр", 200}
+    };
+
+    Player winner = getWinner(game, 3);
+    cout << "Победитель: " << winner.name << " с " << winner.score << " очками!" << endl;
+    
+    return 0;
+}
