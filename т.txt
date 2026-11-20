@@ -1,19 +1,60 @@
 #include <iostream>
 #include <string>
 using namespace std;
-struct Student {
-    string name;
-    int age;
-    double gpa; 
-};
-int main() {
-    Student group[3] = {
-        {"Иван", 20, 4.3},
-        {"Мария", 19, 5.0},
-        {"Петр", 18, 3.8}
-    };
-    for (int i = 0; i < 3; i++) {
-        cout << "Студент: " << group[i].name << endl;
+
+class BankAccount {
+private:
+    string owner;
+    int balance;
+
+public:
+    BankAccount() : owner("Аноним"), balance(0) {}
+
+    BankAccount(string ownerName, int initialBalance) {
+        owner = ownerName;
+        balance = (initialBalance >= 0) ? initialBalance : 0;
     }
+
+    string getOwner() {
+        return owner;
+    }
+
+    int getBalance() {
+        return balance;
+    }
+
+    void setOwner(string newOwner) {
+        owner = newOwner;
+    }
+
+    void deposit(int amount) {
+        if (amount > 0) {
+            balance += amount;
+        } else {
+            cout << "Ошибка: сумма пополнения должна быть положительной!" << endl;
+        }
+    }
+
+    void withdraw(int amount) {
+        if (amount <= 0) {
+            cout << "Ошибка: сумма снятия должна быть положительной!" << endl;
+        } else if (amount > balance) {
+            cout << "Ошибка: недостаточно средств!" << endl;
+        } else {
+            balance -= amount;
+        }
+    }
+};
+
+int main() {
+    BankAccount account1;
+    BankAccount account2("Иван", 1000);
+
+    account1.deposit(-500);
+    account2.withdraw(2000);
+
+    cout << account1.getOwner() << ": " << account1.getBalance() << endl;
+    cout << account2.getOwner() << ": " << account2.getBalance() << endl;
+
     return 0;
 }
