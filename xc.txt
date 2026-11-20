@@ -1,0 +1,47 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Animal {
+protected:
+    string name;
+    int age;
+
+public:
+    Animal(string n, int a) : name(n), age(a) {}
+
+    void eat() {
+        cout << name << " кушает" << endl;
+    }
+};
+
+class Dog : public Animal {
+public:
+    Dog(string n, int a) : Animal(n, a) {}
+
+    void bark() {
+        cout << name << " говорит: Гав!" << endl;
+    }
+};
+
+class Cat : public Animal {
+public:
+    Cat(string n, int a) : Animal(n, a) {}
+
+    void meow() {
+        cout << name << " говорит: Мяу!" << endl;
+    }
+};
+
+int main() {
+    Dog dog("Шарик", 3);
+    Cat cat("Мурка", 2);
+
+    dog.eat();
+    dog.bark();
+
+    cat.eat();
+    cat.meow();
+
+    return 0;
+}
